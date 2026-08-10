@@ -140,7 +140,7 @@ func (m *Maxon) Me(ctx context.Context) (User, error) {
 }
 
 func (m *Maxon) Updates(ctx context.Context) ([]Update, error) {
-	response := ResponseUpdates{}
+	response := updatesResponse{}
 	err := m.Get(ctx, "/updates", &response)
 	return response.Updates, err
 }
@@ -155,8 +155,27 @@ func (m *Maxon) MessageSend(ctx context.Context, chatID int64, text string, opti
 		data["format"] = options.Format
 	}
 
-	message := Message{}
-	err := m.Post(ctx, fmt.Sprintf("/messages?chat_id=%d", chatID), data, &message)
+	response := messageResponse{}
+	err := m.Post(ctx, fmt.Sprintf("/messages?chat_id=%d", chatID), data, &response)
 
-	return message, err
+	return response.Message, err
+}
+
+func (m *Maxon) MessageEdit(ctx context.Context, messageID, text string, options *MessageEditOptions) error {
+	data := map[string]any{
+		"text": text,
+	}
+	if options != nil {
+		data["disable_link_preview"] = options.DisableLinkPreview
+		data["notify"] = !options.NotifyDisable
+		data["format"] = options.Format
+	}
+
+	err := m.Put(ctx, fmt.Sprintf("/messages?message_id=%s", messageID), data, nil)
+	return err
+}
+
+func (m *Maxon) MessageDelete(ctx context.Context, messageID string) error {
+	err := m.Delete(ctx, fmt.Sprintf("/messages?message_id=%s", messageID), nil)
+	return err
 }

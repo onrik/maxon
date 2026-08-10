@@ -22,7 +22,20 @@ func main() {
     }
 
 	fmt.Println(me)
-}
 
+	for {
+		updates, err := bot.Updates(ctx)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+
+		for _, u := range updates {
+			if u.Type == maxon.UpdateTypeMessageCreated {
+				bot.MessageSend(ctx, u.Message.ChatID(), u.Message.Text(), nil)
+			}
+		}
+	}
+}
 
 ```

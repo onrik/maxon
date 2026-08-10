@@ -39,9 +39,8 @@ type User struct {
 }
 
 type Message struct {
-	MessageID string `json:"message_id"`
-	Timestamp int64  `json:"timestamp"`
-	Sender    User   `json:"sender"`
+	Timestamp int64 `json:"timestamp"`
+	Sender    User  `json:"sender"`
 	Recipient struct {
 		ChatID   int64  `json:"chat_id"`
 		ChatType string `json:"chat_type"`
@@ -52,6 +51,18 @@ type Message struct {
 		Seq  int64  `json:"seq"`
 		Text string `json:"text"`
 	} `json:"body"`
+}
+
+func (m *Message) ID() string {
+	return m.Body.Mid
+}
+
+func (m *Message) Text() string {
+	return m.Body.Text
+}
+
+func (m *Message) ChatID() int64 {
+	return m.Recipient.ChatID
 }
 
 type CallbackPayload struct {
@@ -76,12 +87,22 @@ type Update struct {
 	Callback   *CallbackPayload `json:"callback,omitempty"`
 }
 
-type ResponseUpdates struct {
+type updatesResponse struct {
 	Market  int64    `json:"market"`
 	Updates []Update `json:"updates"`
 }
 
+type messageResponse struct {
+	Message Message `json:"message"`
+}
+
 type MessageSendOptions struct {
+	DisableLinkPreview bool          `json:"disable_link_preview,omitempty"`
+	NotifyDisable      bool          `json:"notify_disable,omitempty"`
+	Format             MessageFormat `json:"format,omitempty"`
+}
+
+type MessageEditOptions struct {
 	DisableLinkPreview bool          `json:"disable_link_preview,omitempty"`
 	NotifyDisable      bool          `json:"notify_disable,omitempty"`
 	Format             MessageFormat `json:"format,omitempty"`
