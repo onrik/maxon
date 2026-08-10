@@ -1,6 +1,9 @@
 package maxon
 
-type UpdateType string
+type (
+	UpdateType    string
+	MessageFormat string
+)
 
 const (
 	UpdateTypeBotAdded         UpdateType = "bot_added"
@@ -18,6 +21,9 @@ const (
 	UpdateTypeMessageRemoved   UpdateType = "message_removed"
 	UpdateTypeUserAdded        UpdateType = "user_added"
 	UpdateTypeUserRemoved      UpdateType = "user_removed"
+
+	MessageFormatMarkdown MessageFormat = "markdown"
+	MessageFormatHtml     MessageFormat = "html"
 )
 
 type User struct {
@@ -34,11 +40,18 @@ type User struct {
 
 type Message struct {
 	MessageID string `json:"message_id"`
-	ChatID    int64  `json:"chat_id"`
-	Sender    User   `json:"sender"`
-	Recipient User   `json:"recipient"`
-	Text      string `json:"text"`
 	Timestamp int64  `json:"timestamp"`
+	Sender    User   `json:"sender"`
+	Recipient struct {
+		ChatID   int64  `json:"chat_id"`
+		ChatType string `json:"chat_type"`
+		UserID   int64  `json:"user_id"`
+	} `json:"recipient"`
+	Body struct {
+		Mid  string `json:"mid"`
+		Seq  int64  `json:"seq"`
+		Text string `json:"text"`
+	} `json:"body"`
 }
 
 type CallbackPayload struct {
@@ -48,9 +61,10 @@ type CallbackPayload struct {
 }
 
 type Update struct {
-	Type       UpdateType       `json:"type"`
+	Type       UpdateType       `json:"update_type"`
 	Timestamp  int64            `json:"timestamp"`
-	ChatID     int64            `json:"chat_id"`
+	ChatID     int64            `json:"chat_id,omitempty"`
+	UserID     int64            `json:"user_id,omitempty"`
 	User       *User            `json:"user,omitempty"`
 	UserLocale string           `json:"user_locale,omitempty"`
 	IsChannel  bool             `json:"is_channel,omitempty"`
@@ -65,4 +79,10 @@ type Update struct {
 type ResponseUpdates struct {
 	Market  int64    `json:"market"`
 	Updates []Update `json:"updates"`
+}
+
+type MessageSendOptions struct {
+	DisableLinkPreview bool          `json:"disable_link_preview,omitempty"`
+	NotifyDisable      bool          `json:"notify_disable,omitempty"`
+	Format             MessageFormat `json:"format,omitempty"`
 }

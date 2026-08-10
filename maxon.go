@@ -144,3 +144,19 @@ func (m *Maxon) Updates(ctx context.Context) ([]Update, error) {
 	err := m.Get(ctx, "/updates", &response)
 	return response.Updates, err
 }
+
+func (m *Maxon) MessageSend(ctx context.Context, chatID int64, text string, options *MessageSendOptions) (Message, error) {
+	data := map[string]any{
+		"text": text,
+	}
+	if options != nil {
+		data["disable_link_preview"] = options.DisableLinkPreview
+		data["notify"] = !options.NotifyDisable
+		data["format"] = options.Format
+	}
+
+	message := Message{}
+	err := m.Post(ctx, fmt.Sprintf("/messages?chat_id=%d", chatID), data, &message)
+
+	return message, err
+}
