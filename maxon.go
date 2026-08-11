@@ -146,11 +146,14 @@ func (m *Maxon) Updates(ctx context.Context) ([]Update, error) {
 }
 
 func (m *Maxon) MessageSend(ctx context.Context, chatID int64, text string, options *MessageSendOptions) (Message, error) {
+	path := fmt.Sprintf("/messages?chat_id=%d", chatID)
 	data := map[string]any{
 		"text": text,
 	}
 	if options != nil {
-		data["disable_link_preview"] = options.DisableLinkPreview
+		if options.DisableLinkPreview {
+			path += "&disable_link_preview=true"
+		}
 		data["notify"] = !options.NotifyDisable
 		if options.Format != "" {
 			data["format"] = options.Format
@@ -158,7 +161,7 @@ func (m *Maxon) MessageSend(ctx context.Context, chatID int64, text string, opti
 	}
 
 	response := messageResponse{}
-	err := m.Post(ctx, fmt.Sprintf("/messages?chat_id=%d", chatID), data, &response)
+	err := m.Post(ctx, path, data, &response)
 
 	return response.Message, err
 }
@@ -168,7 +171,6 @@ func (m *Maxon) MessageEdit(ctx context.Context, messageID, text string, options
 		"text": text,
 	}
 	if options != nil {
-		data["disable_link_preview"] = options.DisableLinkPreview
 		data["notify"] = !options.NotifyDisable
 		if options.Format != "" {
 			data["format"] = options.Format

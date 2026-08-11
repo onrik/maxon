@@ -103,7 +103,6 @@ type MessageSendOptions struct {
 }
 
 type MessageEditOptions struct {
-	DisableLinkPreview bool          `json:"disable_link_preview,omitempty"`
-	NotifyDisable      bool          `json:"notify_disable,omitempty"`
-	Format             MessageFormat `json:"format,omitempty"`
+	NotifyDisable bool          `json:"notify_disable,omitempty"`
+	Format        MessageFormat `json:"format,omitempty"`
 }
