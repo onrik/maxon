@@ -152,7 +152,9 @@ func (m *Maxon) MessageSend(ctx context.Context, chatID int64, text string, opti
 	if options != nil {
 		data["disable_link_preview"] = options.DisableLinkPreview
 		data["notify"] = !options.NotifyDisable
-		data["format"] = options.Format
+		if options.Format != "" {
+			data["format"] = options.Format
+		}
 	}
 
 	response := messageResponse{}
@@ -168,7 +170,9 @@ func (m *Maxon) MessageEdit(ctx context.Context, messageID, text string, options
 	if options != nil {
 		data["disable_link_preview"] = options.DisableLinkPreview
 		data["notify"] = !options.NotifyDisable
-		data["format"] = options.Format
+		if options.Format != "" {
+			data["format"] = options.Format
+		}
 	}
 
 	err := m.Put(ctx, fmt.Sprintf("/messages?message_id=%s", messageID), data, nil)
